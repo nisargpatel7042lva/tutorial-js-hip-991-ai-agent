@@ -1,4 +1,4 @@
-const { AccountCreateTransaction, PrivateKey, Hbar, AccountId } = require('@hashgraph/sdk')
+const { AccountCreateTransaction, PrivateKey, Hbar } = require('@hashgraph/sdk')
 
 const createAccount = async (client) => {
     // Create a new ECDSA private key

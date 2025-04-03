@@ -1,9 +1,9 @@
 const dotenv = require('dotenv')
 const getClient = require('./utils/client')
-const { TopicCreateTransaction, CustomFixedFee, Client, TopicMessageSubmitTransaction } = require('@hashgraph/sdk')
+const { TopicCreateTransaction, CustomFixedFee, Client } = require('@hashgraph/sdk')
 const { createMockUSDC, transferTokens } = require('./utils/token')
 const createAccount = require('./utils/account')
-const { getUserInput, closeReadline } = require('./utils/message')
+const { getUserInput, submitMessage, closeReadline } = require('./utils/message')
 dotenv.config()
 
 const main = async () => {
@@ -24,19 +24,13 @@ const main = async () => {
   console.log('Transferred 100 tokens to fee collector account')
 
   console.log('Setting up custom fee configuration...')
-  const customFee = new CustomFixedFee()
-    .setDenominatingTokenId(mockUSDC)
-    .setAmount(5)
-    .setFeeCollectorAccountId(client.operatorAccountId)
-  console.log(`Custom fee configured: 5 ${mockUSDC} tokens per message`)
+
+  // 1. Create a custom fee configuration
 
   console.log('Creating new topic with custom fee...')
-  const topicCreateTx = new TopicCreateTransaction()
-    .setCustomFees([customFee])
 
-  const executeTopicCreateTx = await topicCreateTx.execute(client)
-  const topicCreateReceipt = await executeTopicCreateTx.getReceipt(client)
-  const topicId = topicCreateReceipt.topicId
+  // 2. Create a new topic with the custom fee configuration
+
   console.log(`Topic created successfully with ID: ${topicId}`)
 
   console.log('\nMessage submission loop started. Type "exit" to quit.')
@@ -56,14 +50,7 @@ const main = async () => {
     }
 
     try {
-      const submitMessageTx = new TopicMessageSubmitTransaction()
-        .setTopicId(topicId)
-        .setMessage(message)
-      const newClient = Client.forTestnet().setOperator(newAccount.accountId, newAccount.privateKey)
-      const executeSubmitMessageTx = await submitMessageTx.execute(newClient)
-      const submitMessageReceipt = await executeSubmitMessageTx.getReceipt(newClient)
-      console.log(`Message "${message}" submitted successfully to topic`)
-      console.log(`Transaction status: ${submitMessageReceipt.status}`)
+      // 3. Submit a message to the topic
     } catch (error) {
       console.error('Error submitting message:', error.message)
     }

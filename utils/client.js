@@ -9,7 +9,6 @@ const getClient = async () => {
   if (client) return client
   const testnetClient = Client.forTestnet()
   const accountId = await AccountId.fromEvmAddress(0, 0, process.env.OPERATOR_ADDRESS).populateAccountNum(testnetClient)
-  accountId.evmAddress = null
   const privateKey = PrivateKey.fromStringECDSA(process.env.OPERATOR_KEY)
   client = testnetClient.setOperator(accountId, privateKey)
   return client
