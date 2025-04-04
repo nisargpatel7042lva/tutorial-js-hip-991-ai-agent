@@ -21,7 +21,6 @@ npm install
    cp env.sample .env
    ```
    - Fill in your `.env` file with your credentials:
-     - `OPERATOR_ID`: Your Hedera account ID
      - `OPERATOR_ADDRESS`: Your Hedera account address
      - `OPERATOR_KEY`: Your Hedera private key
      - `OPENAI_API_KEY`: Your OpenAI API key
@@ -63,7 +62,6 @@ Replace `<TOPIC_ID>` with the Topic ID from step 1.
 ## Environment Variables
 
 ```env
-OPERATOR_ID=0.0.1234        # Your Hedera account ID
 OPERATOR_ADDRESS=0x...      # Your Hedera account address
 OPERATOR_KEY=0x...         # Your Hedera private key
 OPENAI_API_KEY=sk...      # Your OpenAI API key

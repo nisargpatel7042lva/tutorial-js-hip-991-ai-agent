@@ -10,18 +10,18 @@ const main = async () => {
   console.log('Initializing Hedera client...')
   const client = await getClient()
 
-  console.log('Creating new account for fee collection...')
+  console.log('Creating new account for fee payer...')
   const newAccount = await createAccount(client)
-  console.log(`Created new fee collector account with ID: ${newAccount.accountId}`)
+  console.log(`Created new fee payer account with ID: ${newAccount.accountId}`)
 
   console.log('Creating mock USDC token...')
   const mockUSDC = await createMockUSDC(client)
   console.log(`Mock USDC token created with ID: ${mockUSDC}`)
 
-  // Transfer some tokens to the fee collector account
-  console.log('Transferring tokens to fee collector account...')
+  // Transfer some tokens to the fee payer account
+  console.log('Transferring tokens to fee payer account...')
   await transferTokens(client, mockUSDC, client.operatorAccountId, newAccount.accountId, 100)
-  console.log('Transferred 100 tokens to fee collector account')
+  console.log('Transferred 100 tokens to fee payer account')
 
   console.log('Setting up custom fee configuration...')
   const customFee = new CustomFixedFee()

@@ -1,6 +1,6 @@
 const dotenv = require('dotenv')
 const getClient = require('./utils/client')
-const { TopicCreateTransaction, CustomFixedFee, Client } = require('@hashgraph/sdk')
+const { TopicCreateTransaction, CustomFixedFee, Client, TopicMessageSubmitTransaction } = require('@hashgraph/sdk')
 const { createMockUSDC, transferTokens } = require('./utils/token')
 const createAccount = require('./utils/account')
 const { getUserInput, submitMessage, closeReadline } = require('./utils/message')
@@ -10,26 +10,36 @@ const main = async () => {
   console.log('Initializing Hedera client...')
   const client = await getClient()
 
-  console.log('Creating new account for fee collection...')
+  console.log('Creating new account for fee payer...')
   const newAccount = await createAccount(client)
-  console.log(`Created new fee collector account with ID: ${newAccount.accountId}`)
+  console.log(`Created new fee payer account with ID: ${newAccount.accountId}`)
 
   console.log('Creating mock USDC token...')
   const mockUSDC = await createMockUSDC(client)
   console.log(`Mock USDC token created with ID: ${mockUSDC}`)
 
-  // Transfer some tokens to the fee collector account
-  console.log('Transferring tokens to fee collector account...')
+  // Transfer some tokens to the fee payer account
+  console.log('Transferring tokens to fee payer account...')
   await transferTokens(client, mockUSDC, client.operatorAccountId, newAccount.accountId, 100)
-  console.log('Transferred 100 tokens to fee collector account')
+  console.log('Transferred 100 tokens to fee payer account')
 
   console.log('Setting up custom fee configuration...')
 
   // 1. Create a custom fee configuration
+  const customFee = new CustomFixedFee()
+    .setDenominatingTokenId(mockUSDC)
+    .setAmount(5)
+    .setFeeCollectorAccountId(client.operatorAccountId)
 
   console.log('Creating new topic with custom fee...')
 
   // 2. Create a new topic with the custom fee configuration
+  const topicCreateTx = new TopicCreateTransaction()
+    .setCustomFees([customFee])
+
+  const executeTopicCreateTx = await topicCreateTx.execute(client)
+  const topicCreateReceipt = await executeTopicCreateTx.getReceipt(client)
+  const topicId = topicCreateReceipt.topicId
 
   console.log(`Topic created successfully with ID: ${topicId}`)
 
@@ -51,6 +61,15 @@ const main = async () => {
 
     try {
       // 3. Submit a message to the topic
+      const submitMessageTx = new TopicMessageSubmitTransaction()
+        .setTopicId(topicId)
+        .setMessage(message)
+
+      const newClient = Client.forTestnet().setOperator(newAccount.accountId, newAccount.privateKey)
+      const executeSubmitMessageTx = await submitMessageTx.execute(newClient)
+      const submitMessageReceipt = await executeSubmitMessageTx.getReceipt(newClient)
+      console.log(`Message "${message}" submitted successfully to topic`)
+      console.log(`Transaction status: ${submitMessageReceipt.status}`)
     } catch (error) {
       console.error('Error submitting message:', error.message)
     }

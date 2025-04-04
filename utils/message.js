@@ -1,5 +1,4 @@
 const readline = require('readline')
-const { TopicMessageSubmitTransaction } = require('@hashgraph/sdk')
 
 const rl = readline.createInterface({
     input: process.stdin,
