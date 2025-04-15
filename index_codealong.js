@@ -26,22 +26,8 @@ const main = async () => {
   console.log('Setting up custom fee configuration...')
 
   // 1. Create a custom fee configuration
-  const customFee = new CustomFixedFee()
-    .setDenominatingTokenId(mockUSDC)
-    .setAmount(5)
-    .setFeeCollectorAccountId(client.operatorAccountId)
-
-  console.log('Creating new topic with custom fee...')
 
   // 2. Create a new topic with the custom fee configuration
-  const topicCreateTx = new TopicCreateTransaction()
-    .setCustomFees([customFee])
-
-  const executeTopicCreateTx = await topicCreateTx.execute(client)
-  const topicCreateReceipt = await executeTopicCreateTx.getReceipt(client)
-  const topicId = topicCreateReceipt.topicId
-
-  console.log(`Topic created successfully with ID: ${topicId}`)
 
   console.log('\nMessage submission loop started. Type "exit" to quit.')
   console.log('----------------------------------------')
@@ -61,15 +47,6 @@ const main = async () => {
 
     try {
       // 3. Submit a message to the topic
-      const submitMessageTx = new TopicMessageSubmitTransaction()
-        .setTopicId(topicId)
-        .setMessage(message)
-
-      const newClient = Client.forTestnet().setOperator(newAccount.accountId, newAccount.privateKey)
-      const executeSubmitMessageTx = await submitMessageTx.execute(newClient)
-      const submitMessageReceipt = await executeSubmitMessageTx.getReceipt(newClient)
-      console.log(`Message "${message}" submitted successfully to topic`)
-      console.log(`Transaction status: ${submitMessageReceipt.status}`)
     } catch (error) {
       console.error('Error submitting message:', error.message)
     }
