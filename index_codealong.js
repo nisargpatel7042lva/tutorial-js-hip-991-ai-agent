@@ -3,7 +3,7 @@ const getClient = require('./utils/client')
 const { TopicCreateTransaction, CustomFixedFee, Client, TopicMessageSubmitTransaction } = require('@hashgraph/sdk')
 const { createMockUSDC, transferTokens } = require('./utils/token')
 const createAccount = require('./utils/account')
-const { getUserInput, submitMessage, closeReadline } = require('./utils/message')
+const { getUserInput, closeReadline } = require('./utils/message')
 dotenv.config()
 
 const main = async () => {
